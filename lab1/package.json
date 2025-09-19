@@ -1,0 +1,15 @@
+{
+  "name": "lab1",
+  "version": "1.0.0",
+  "description": "node.js lab1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "console.log(\"Hi there!\");"
+  },
+  "author": "Ali H. Radwan",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
