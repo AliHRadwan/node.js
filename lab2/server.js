@@ -109,7 +109,7 @@ const server = http.createServer((req, res) => {
                 parsedUsers = parsedUsers.filter((user) => {
                   return user.id !== Number(data.id);
                 });
-                
+
                 let counter = 0;
                 parsedUsers = parsedUsers.map((user) => {
                   user.id = ++counter;
@@ -128,6 +128,50 @@ const server = http.createServer((req, res) => {
           break;
 
         default:
+          res.writeHead(404);
+          res.end(`<h1 style="color: red; margin: 20px;">Error!</h1>`);
+          break;
+      }
+      break;
+
+    case "PATCH":
+      switch (req.url) {
+        default:
+          if (reg.test(req.url)) {
+            const id = req.url.split('/')[2];
+            const user = parsedUsers.find(u => u.id === parseInt(id))
+            if (!user) {
+              res.writeHead(404, { "content-type": "text/plain" })
+              res.end("NOT FOUND");
+              break;
+            }
+
+            let body = [];
+            req
+              .on("data", (chunk) => {
+                body.push(chunk);
+              })
+              .on("end", async () => {
+                try {
+                  body = Buffer.concat(body).toString();
+                  const data = JSON.parse(body);
+
+                  parsedUsers = parsedUsers.map(user =>
+                    user.id === Number(id) ? { ...user, name: data.name } : user
+                  );
+
+                  await fs.writeFile("./users.json", JSON.stringify(parsedUsers, null, 2));
+                  res.writeHead(201, { "content-type": "application/json" });
+                  res.end(JSON.stringify({ 'success': true }));
+
+                } catch (error) {
+                  res.writeHead(400);
+                  res.end("error");
+                }
+              });
+            break;
+          }
+
           res.writeHead(404);
           res.end(`<h1 style="color: red; margin: 20px;">Error!</h1>`);
           break;
